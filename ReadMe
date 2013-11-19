@@ -1,0 +1,24 @@
+Scripts:
+
+1. Find all Exe, DLL and Sys files and copy them to a central directory. - find_exes_and_dlls.py
+
+2. Disassemble a list of files and run strings on all IDBs. - get_all_strings.py
+
+3. Run simple 'grep' wrapper on all strings output with customizable keyword list. - cli_for_tools
+
+4. Run Burp version grabbing extension. Add more headers to watch out for in responses. - version_detect.py
+
+5. Check OS permissions of all files in specific directories. - permission_check.bat
+
+6. Extract file metadata from files. - cli_for_tools
+
+7. Extract insecure functions from IDBs. - get_vuln_functions_list.py
+
+8. Verify that all files in given directories are signed. - cli_for_tools
+
+9. Search for weak algorithms in IDBs. - get_crypto_calls.py
+
+Command Line Shortcuts: cli_for_tools
+
+1. Tshark and Rawcap.
+2. Deleting certificates from a signed executable.

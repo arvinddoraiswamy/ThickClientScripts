@@ -1,0 +1,4 @@
+#List of directories which contain interesting files
+directories=C:\Program Files\;C:\Program Files\dir1;C:\Program Files\dir2;
+#Types of files that you want to disassemble
+vuln_functions_file_types=exe;dll;sys

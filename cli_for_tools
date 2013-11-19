@@ -1,0 +1,35 @@
+1) Find all EXE, DLL and SYS files. Make sure config.txt exists in the same directory as that of the script.
+python find_exes_and_dlls.py
+
+2) Get list of strings from all the stored IDB files.
+FOR %x IN ("C:\data\IDBstore\AllIDBs\*.idb") do idaw -A -L"C:\data\strings_batch_log.txt" -S"C:\data\Python_scripts\get_all_strings.py" "%x"
+
+3) Search for passwords and keys inside the output for 'strings'
+egrep -inr 'password|key' strings*.txt
+
+4) Use Burp Extension version_detect.py and configure client to pass through Burp. The extension will record all the version information that leaks via the server headers.
+
+5) Check permissions for all relevant files, registry keys, processes, threads and services. The commands for all these are in the file permission_check.bat. It just uses the Sysinternals tool accesschk.exe to check permissions. Duplicate as many lines as needed. It's up to the engineer to find out the relevant resources.
+
+6) Get metadata from all of the relevant files to check for information leakage.
+FOR /F "usebackq delims=" %x IN (C:\data\file_list.txt) do wmic datafile get Name,Description,Manufacturer where name="%x" >> "C:\data\metadata_info.txt"
+
+7) Get potentially dangerous functions from a list of files found from previous command [EXE, DLL, SYS].
+FOR /F "usebackq delims=" %x IN (C:\data\file_list.txt) do idaw -c -o"C:\data\IDBstore" -L"C:\data\batch_log.txt" -A -S"C:\data\Python_scripts\get_vuln_functions_list.py" "%x"
+
+8) Check if all EXE, DLL and SYS files are signed
+FOR /F "usebackq delims=" %x IN (C:\data\file_list.txt) do "C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin\signtool.exe" verify /pa "%x" >> "C:\data\signed_files.txt"
+
+9) Get all crypto related calls. Copy of the vuln functions script..in essence...but searches for a different set of APIs and the purpose is different, hence separated the script. Again, this can be done by looking at the IDBs.
+FOR %x IN ("C:\data\IDBstore\AllIDBs\*.idb") do idaw -A -L"C:\data\crypto_log.txt" -o"C:\data\IDBstore" -S"C:\data\Python_scripts\get_crypto_calls.py" "%x"
+
+Other useful commands:
+
+1) Running tshark and capturing all packets a client sends out. Could do it with Wireshark too I guess, but this is probably lighter and less likely (based on ZERO conclusive evidence :)) to crash.
+- Get list of interface names on Windows - tshark -D
+- Sniff on the interface on which all traffic is passing - tshark -i <interface name> -w <outputfile.pcap>
+
+2) Wireshark on windows did not capture packets on the loopback interface. Hence I used rawcap. Rawcap can be used in interactive mode. Just run rawcap.exe and then enter the loopback address and an output file.
+- RawCap.exe 127.0.0.1 localhost_capture.pcap
+
+3) Delete certificates from signed executables - delcert.exe <Filename>. Delcert can be downloaded from here - http://forum.xda-developers.com/showthread.php?p=2508061. I have no clue if it contains malware or not, but it does what it says. Run it in a VM disconnected from the network if you're paranoid :)
